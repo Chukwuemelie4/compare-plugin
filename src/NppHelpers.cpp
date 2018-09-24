@@ -624,12 +624,26 @@ bool isVisibleAdjacentAnnotation(int view, int line, bool down)
 }
 
 
-void addBlankSection(int view, int line, int length)
+void addBlankSection(int view, int line, int length, int selectionMark)
 {
 	if (length <= 0)
 		return;
 
 	std::vector<char> blank(length - 1, '\n');
+
+	if (selectionMark < 0)
+	{
+		const char sel[] = "--- Selection Compare Block Start ---";
+
+		blank.insert(blank.end(), sel, sel + sizeof(sel) - 1);
+	}
+	else if (selectionMark > 0)
+	{
+		const char sel[] = "--- Selection Compare Block End ---";
+
+		blank.insert(blank.begin(), sel, sel + sizeof(sel) - 1);
+	}
+
 	blank.push_back('\0');
 
 	CallScintilla(view, SCI_ANNOTATIONSETTEXT, line - 1, (LPARAM)blank.data());
